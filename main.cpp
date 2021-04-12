@@ -65,7 +65,7 @@ int main()
   int nb_iterations = 1000;
   int th_id, nthreads;
 
-  Mat img = imread("images/base3k.png");
+  Mat img = imread("resources/base3k.png");
   img.convertTo(img, CV_32F, 1 / 255.0); //Image avec trois channels B,G,R codés entre 0 et 1
 
   auto start = omp_get_wtime();

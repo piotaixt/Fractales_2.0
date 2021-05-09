@@ -47,7 +47,7 @@ Vec3f get_color_from_nb_iteration(int nb, int nb_max)
 
 Vec3f color_of_C_number(complex<double> z, int nb_iteration_max)
 {
-  complex<double> c=z;
+  complex<double> c = z;
   for (int i = 0; i < nb_iteration_max; i++)
   {
     z = z * z + c;
@@ -63,38 +63,31 @@ Vec3f color_of_C_number(complex<double> z, int nb_iteration_max)
 int main()
 {
   int nb_iterations = 1000;
-  int th_id, nthreads;
+  int NTHREADS;
+  cout << "Nombre de threads ?" << endl;
+  cin >> NTHREADS;
 
-  Mat img = imread("resources/base3k.png");
+  Mat img = imread("resources/base10k.png");
   img.convertTo(img, CV_32F, 1 / 255.0); //Image avec trois channels B,G,R codés entre 0 et 1
-
+  
+  omp_set_num_threads(NTHREADS);
   auto start = omp_get_wtime();
 
-#pragma omp parallel private(th_id)
+#pragma omp parallel for schedule(dynamic, 1)
+  for (int i = 0; i < img.rows; i++)
   {
-    th_id = omp_get_thread_num();
-    nthreads = omp_get_num_threads();
-    for (int i = 0; i < img.rows; i++)
+    for (int j = 0; j < img.cols; j++)
     {
-      if (i % nthreads == th_id)
-      {
-      for (int j = 0; j < img.cols; j++)
-      {
-        complex<double> z = get_C_number_from_pixel(i, j, &img);
-        img.at<Vec3f>(i, j) = color_of_C_number(z, nb_iterations);
-      }
-      }
+      complex<double> z = get_C_number_from_pixel(i, j, &img);
+      img.at<Vec3f>(i, j) = color_of_C_number(z, nb_iterations);
     }
-#pragma omp barrier
-
   }
 
   auto stop = omp_get_wtime();
   auto elapsed = chrono::duration<double>(stop - start).count();
   cout << "Calculs faits en " << elapsed << " secondes." << endl;
-  cout << "Nombre de threads : " << nthreads << endl;
 
   // display(img);
-  imwrite("images/test.tiff", img);
+  imwrite("images/Mendelbrot.tiff", img);
   return 0;
 }

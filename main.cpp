@@ -18,9 +18,9 @@ void display(Mat image)
 complex<double> get_C_number_from_pixel(int i, int j, const Mat *image, complex<double> center, float space)
 {
   //space donne la dimension de la zoombox (écart entre le centre et le bord de la "zoombox" en x)
-  float ratio = image->rows / image->cols; // Pour gérer le ratio de la taille de l'image
-  double realpart = center.real() + 2 * space * (j - ((image->cols) / 2.0)) / (image->cols);
-  double impart = center.imag() + 2 * space * ratio * (-(i - (image->rows) / 2.0)) / (image->rows);
+  float ratio = image->rows / (float)image->cols; // Pour gérer le ratio de la taille de l'image
+  double realpart = -center.real() + 2 * space * (j - ((image->cols) / 2.0)) / (image->cols);
+  double impart = -center.imag() + 2 * space * ratio * (-(i - (image->rows) / 2.0)) / (image->rows);
   complex<double> result(realpart, impart);
   return result;
 }
@@ -30,46 +30,48 @@ Vec3f get_color_from_nb_iteration(int nb)
   float value_r;
   float value_g;
   float value_b;
-  if ((nb % 300) < 50)
+  int total = 300;
+  int m = 50;
+  if ((nb % total) < (float)m)
   {
     //Dégradé de noir vers blanc
-    value_r = (nb % 50) / 50.0;
-    value_g = (nb % 50) / 50.0;
-    value_b = (nb % 50) / 50.0;
+    value_r = (nb % m) / (float)m;
+    value_g = (nb % m) / (float)m;
+    value_b = (nb % m) / (float)m;
   }
-  else if ((nb % 300) < 100)
+  else if ((nb % total) < 2*(float)m)
   {
     //Dégradé de blanc vers bleu
-    value_r = 1 - (nb % 50) / 50.0;
-    value_g = 1 - (nb % 50) / 50.0;
+    value_r = 1 - (nb % m) / (float)m;
+    value_g = 1 - (nb % m) / (float)m;
     value_b = 1;
   }
-  else if ((nb % 300) < 150)
+  else if ((nb % total) < 3*(float)m)
   {
     //Dégradé de bleu vers violet
-    value_r = (nb % 50) / 50.0;
+    value_r = (nb % m) / (float)m;
     value_g = 0;
     value_b = 1;
   }
-  else if ((nb % 300) < 200)
+  else if ((nb % total) < 4*(float)m)
   {
     //Dégradé de violet vers rouge
     value_r = 1;
     value_g = 0;
-    value_b = 1 - (nb % 50) / 50.00;
+    value_b = 1 - (nb % m) / (float)m;
   }
-  else if ((nb % 300) < 250)
+  else if ((nb % total) < 5*(float)m)
   {
     //Dégradé de rouge vers orange
     value_r = 1;
-    value_g = (165 / 255.0) * (nb % 50) / 50.0;
+    value_g = (165 / 255.0) * (nb % m) / (float)m;
     value_b = 0;
   }
-  else if ((nb % 300) < 300)
+  else if ((nb % total) < 6*(float)m)
   {
     //Dégradé de orange vers noir
-    value_r = 1 - (nb % 50) / 50.00;
-    value_g = (165 / 255.0) - (165 / 255.0) * (nb % 50) / 50.0;
+    value_r = 1 - (nb % m) / (float)m;
+    value_g = (165 / 255.0) - (165 / 255.0) * (nb % m) / (float)m;
     value_b = 0;
   }
   Vec3f intensity(value_b, value_g, value_r);
@@ -96,7 +98,7 @@ void make_pallette()
   int dim_x = 1000;
   int dim_y = 200;
   Mat pallette = Mat::ones(Size(dim_x, dim_y), CV_32FC3);
-  pallette.convertTo(pallette, CV_32FC3, 1 / 255.0); //Image avec trois channels B,G,R codés entre 0 et 1
+  // pallette.convertTo(pallette, CV_32FC3, 1 / 255.0); //Image avec trois channels B,G,R codés entre 0 et 1
 #pragma omp parallel for schedule(dynamic, 1)
   for (int j = 0; j < pallette.cols; j++)
   {
@@ -106,8 +108,10 @@ void make_pallette()
       pallette.at<Vec3f>(i, j) = color;
     }
   }
-  display(pallette);
+  // display(pallette);
   imwrite("images/pallette.tiff", pallette);
+  auto truc = imread("images/pallette.tiff");
+  display(truc);
   cout << "Voila." << endl
        << "---------" << endl;
 }
@@ -125,7 +129,8 @@ int main()
   int dim_y = 1000;
 
   //Param du zoom
-  complex<double> center(0.06783611264225832, 0.6617460391250546);
+  // complex<double> center(-0.7, 0); // Centre approx figure globale
+  complex<double> center(0.743643887037151, 0.13182590420533);
   float space = 0.1;
 
   cout << "----------------------------------------" << endl

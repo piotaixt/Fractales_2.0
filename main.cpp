@@ -71,13 +71,7 @@ Vec3f get_color_from_nb_iteration(int nb)
     value_g = (165 / 255.0) - (165 / 255.0) * (nb % 50) / 50.0;
     value_b = 0;
   }
-
   Vec3f intensity(value_b, value_g, value_r);
-  // Vec3f intensity = img.at<Vec3f>(j, i);
-  // cout << intensity << endl;
-  // float blue = intensity.val[0];
-  // float green = intensity.val[1];
-  // float red = intensity.val[2];
   return intensity;
 }
 
@@ -112,32 +106,43 @@ void make_pallette()
     }
   }
   display(pallette);
+  imwrite("images/pallette.tiff", pallette);
 }
 
 int main()
 {
-  int nb_iterations;
-  int NTHREADS;
-  int make_pal;
+  int nb_iterations = 300;
+  int NTHREADS = 1;
+  int make_pal = 0;
+  int dim_x = 1000;
+  int dim_y = 1000;
+  int option = 0;
   cout << "Merci de ne pas faire l'autiste et de mettre des entiers." << endl;
-  cout << "Nombre d'itérations ?" << endl;
-  cin >> nb_iterations;
-  cout << "Nombre de threads ?" << endl;
-  cin >> NTHREADS;
-  cout << "Faire la pallette ? 0 pour non, 1 pour oui." << endl;
-  cin >> make_pal;
-
-  Mat img = imread("resources/base10k.png");
-  img.convertTo(img, CV_32F, 1 / 255.0); //Image avec trois channels B,G,R codés entre 0 et 1
-
-  omp_set_num_threads(NTHREADS);
-  auto start = omp_get_wtime();
-
-  if (make_pal == 1)
+  cout << "Entrer 1 pour Mendelbrot avec options, 2 pour la pallette, 0 pour Mendelbrot par defaut." << endl;
+  cin >> option;
+  if (option == 1)
+  {
+    cout << "Mendelbrot options: " << endl;
+    cout << "Largeur image en pixels ? " << endl;
+    cin >> dim_x;
+    cout << "Hauteur image en pixels ? " << endl;
+    cin >> dim_y;
+    cout << "Nombre d'itérations ?" << endl;
+    cin >> nb_iterations;
+    cout << "Nombre de threads ?" << endl;
+    cin >> NTHREADS;
+  }
+  else if (option == 2)
   {
     make_pallette();
     return 0;
   }
+
+  Mat img = Mat::ones(Size(dim_x, dim_y), CV_32FC3);
+  img.convertTo(img, CV_32FC3, 1 / 255.0); //Image avec trois channels B,G,R codés entre 0 et 1
+
+  omp_set_num_threads(NTHREADS);
+  auto start = omp_get_wtime();
 
 #pragma omp parallel for schedule(dynamic, 1)
   for (int i = 0; i < img.rows; i++)

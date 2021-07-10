@@ -107,6 +107,8 @@ void make_pallette()
   }
   display(pallette);
   imwrite("images/pallette.tiff", pallette);
+  cout << "Voila." << endl
+       << "---------" << endl;
 }
 
 int main()
@@ -117,13 +119,19 @@ int main()
   int dim_x = 1000;
   int dim_y = 1000;
   int option = 0;
-  cout << "Merci de ne pas faire l'autiste et de mettre des entiers." << endl;
-  cout << "Entrer 1 pour Mendelbrot avec options, 2 pour la pallette, 0 pour Mendelbrot par defaut." << endl;
+  cout << "----------------------------------------" << endl
+       << "Hello" << endl
+       << "----------------------------------------" << endl
+       << "Merci de ne pas faire l'autiste et de mettre des entiers autorisés." << endl
+       << "Options:" << endl
+       << "1 pour Mendelbrot" << endl
+       << "2 pour la pallette de couleurs" << endl
+       << "--------" << endl;
   cin >> option;
   if (option == 1)
   {
-    cout << "Mendelbrot options: " << endl;
-    cout << "Largeur image en pixels ? " << endl;
+    cout << "Mendelbrot options: " << endl
+         << "Largeur image en pixels ? " << endl;
     cin >> dim_x;
     cout << "Hauteur image en pixels ? " << endl;
     cin >> dim_y;
@@ -156,7 +164,9 @@ int main()
 
   auto stop = omp_get_wtime();
   auto elapsed = chrono::duration<double>(stop - start).count();
-  cout << "Calculs faits en " << elapsed << " secondes." << endl;
+  cout << "----------------------------------------" << endl
+       << "Calculs faits en " << elapsed << " secondes." << endl
+       << "----------------------------------------" << endl;
 
   // display(img);
   imwrite("images/Mendelbrot.tiff", img);

@@ -15,11 +15,12 @@ void display(Mat image)
   destroyAllWindows();
 }
 
-complex<double> get_C_number_from_pixel(int i, int j, const Mat *image)
+complex<double> get_C_number_from_pixel(int i, int j, const Mat *image, complex<double> center, float space)
 {
-  float zoom_factor = 3.5;
-  double realpart = -0.7 + zoom_factor * (j - ((image->cols) / 2.0)) / (image->cols);
-  double impart = zoom_factor * (-(i - (image->rows) / 2.0)) / (image->rows);
+  //space donne la dimension de la zoombox (écart entre le centre et le bord de la "zoombox" en x)
+  float ratio = image->rows / image->cols; // Pour gérer le ratio de la taille de l'image
+  double realpart = center.real() + 2 * space * (j - ((image->cols) / 2.0)) / (image->cols);
+  double impart = center.imag() + 2 * space * ratio * (-(i - (image->rows) / 2.0)) / (image->rows);
   complex<double> result(realpart, impart);
   return result;
 }
@@ -113,12 +114,20 @@ void make_pallette()
 
 int main()
 {
+  int option = 0;
+
+  //Param de calcul
   int nb_iterations = 300;
   int NTHREADS = 1;
-  int make_pal = 0;
+
+  //Param de l'image
   int dim_x = 1000;
   int dim_y = 1000;
-  int option = 0;
+
+  //Param du zoom
+  complex<double> center(0.06783611264225832, 0.6617460391250546);
+  float space = 0.1;
+
   cout << "----------------------------------------" << endl
        << "Hello" << endl
        << "----------------------------------------" << endl
@@ -139,6 +148,8 @@ int main()
     cin >> nb_iterations;
     cout << "Nombre de threads ?" << endl;
     cin >> NTHREADS;
+    cout << "largeur zoombox, float ! ?" << endl;
+    cin >> space;
   }
   else if (option == 2)
   {
@@ -157,7 +168,7 @@ int main()
   {
     for (int j = 0; j < img.cols; j++)
     {
-      complex<double> z = get_C_number_from_pixel(i, j, &img);
+      complex<double> z = get_C_number_from_pixel(i, j, &img, center, space);
       img.at<Vec3f>(i, j) = color_of_C_number(z, nb_iterations);
     }
   }

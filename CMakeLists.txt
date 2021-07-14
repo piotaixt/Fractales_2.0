@@ -8,7 +8,7 @@ project(fractales)
 
 # We need OpenCV
 find_package( OpenCV REQUIRED )
-
+find_package(Boost REQUIRED COMPONENTS program_options)
 # Look for OpenMP in path and add it to compile options
 find_package( OpenMP )
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
@@ -23,6 +23,7 @@ add_executable(exe main.cpp)
 target_link_libraries(
     exe
     PUBLIC ${OpenCV_LIBS}
+    PUBLIC ${Boost_LIBRARIES}
 )
 
 # target_link_libraries(

@@ -4,9 +4,15 @@
 #include <complex>
 #include <chrono>
 #include <opencv2/opencv.hpp>
+#include <stdlib.h>
+#include <boost/program_options/option.hpp>
+#include <boost/program_options/options_description.hpp>
+#include <boost/program_options/variables_map.hpp>
+#include <boost/program_options/parsers.hpp>
 
 using namespace std;
 using namespace cv;
+namespace po = boost::program_options;
 
 void display(Mat image)
 {
@@ -19,8 +25,8 @@ complex<double> get_C_number_from_pixel(int i, int j, const Mat *image, complex<
 {
   //space donne la dimension de la zoombox (écart entre le centre et le bord de la "zoombox" en x)
   float ratio = image->rows / (float)image->cols; // Pour gérer le ratio de la taille de l'image
-  double realpart = -center.real() + 2 * space * (j - ((image->cols) / 2.0)) / (image->cols);
-  double impart = -center.imag() + 2 * space * ratio * (-(i - (image->rows) / 2.0)) / (image->rows);
+  double realpart = center.real() + 2 * space * (j - ((image->cols) / 2.0)) / (image->cols);
+  double impart = center.imag() + 2 * space * ratio * (-(i - (image->rows) / 2.0)) / (image->rows);
   complex<double> result(realpart, impart);
   return result;
 }
@@ -30,8 +36,8 @@ Vec3f get_color_from_nb_iteration(int nb)
   float value_r;
   float value_g;
   float value_b;
-  int total = 300;
-  int m = 50;
+  int total = 150;
+  int m = 25;
   if ((nb % total) < (float)m)
   {
     //Dégradé de noir vers blanc
@@ -39,35 +45,35 @@ Vec3f get_color_from_nb_iteration(int nb)
     value_g = (nb % m) / (float)m;
     value_b = (nb % m) / (float)m;
   }
-  else if ((nb % total) < 2*(float)m)
+  else if ((nb % total) < 2 * (float)m)
   {
     //Dégradé de blanc vers bleu
     value_r = 1 - (nb % m) / (float)m;
     value_g = 1 - (nb % m) / (float)m;
     value_b = 1;
   }
-  else if ((nb % total) < 3*(float)m)
+  else if ((nb % total) < 3 * (float)m)
   {
-    //Dégradé de bleu vers violet
-    value_r = (nb % m) / (float)m;
-    value_g = 0;
-    value_b = 1;
-  }
-  else if ((nb % total) < 4*(float)m)
-  {
-    //Dégradé de violet vers rouge
-    value_r = 1;
+    //Dégradé de bleu vers noir
+    value_r = 0;
     value_g = 0;
     value_b = 1 - (nb % m) / (float)m;
   }
-  else if ((nb % total) < 5*(float)m)
+  else if ((nb % total) < 4 * (float)m)
+  {
+    //Dégradé de noir vers rouge
+    value_r = (nb % m) / (float)m;
+    value_g = 0;
+    value_b = 0;
+  }
+  else if ((nb % total) < 5 * (float)m)
   {
     //Dégradé de rouge vers orange
     value_r = 1;
     value_g = (165 / 255.0) * (nb % m) / (float)m;
     value_b = 0;
   }
-  else if ((nb % total) < 6*(float)m)
+  else if ((nb % total) < 6 * (float)m)
   {
     //Dégradé de orange vers noir
     value_r = 1 - (nb % m) / (float)m;
@@ -116,7 +122,7 @@ void make_pallette()
        << "---------" << endl;
 }
 
-int main()
+int main(int argc, char **argv)
 {
   int option = 0;
 
@@ -134,33 +140,71 @@ int main()
   float space = 0.1;
 
   cout << "----------------------------------------" << endl
-       << "Hello" << endl
-       << "----------------------------------------" << endl
-       << "Merci de ne pas faire l'autiste et de mettre des entiers autorisés." << endl
-       << "Options:" << endl
-       << "1 pour Mendelbrot" << endl
-       << "2 pour la pallette de couleurs" << endl
-       << "--------" << endl;
-  cin >> option;
-  if (option == 1)
+       << "Fractales 2.0" << endl
+       << "----------------------------------------" << endl;
+
+  // Declare the supported options.
+  po::options_description desc("Allowed options");
+  desc.add_options()("help", "Afficher les options")("size_x", po::value<int>(), "Largeur de l'image en pixels")("size_y", po::value<int>(), "Hauteur de l'image en pixels")("nbr_iter", po::value<int>(), "Nombre maximal d'itérations")("nbr_threads", po::value<int>(), "Nombre de threads utilisés")("size_zoombox", po::value<double>(), "Demi largeur de la zoombox")("center_x", po::value<double>(), "Centre du zoom en x")("center_y", po::value<double>(), "Centre du zoom en y")("pallette", po::value<bool>(), "Afficher la pallette de couleurs");
+
+  po::variables_map vm;
+  po::store(po::parse_command_line(argc, argv, desc), vm);
+  po::notify(vm);
+
+  if (vm.count("help"))
   {
-    cout << "Mendelbrot options: " << endl
-         << "Largeur image en pixels ? " << endl;
-    cin >> dim_x;
-    cout << "Hauteur image en pixels ? " << endl;
-    cin >> dim_y;
-    cout << "Nombre d'itérations ?" << endl;
-    cin >> nb_iterations;
-    cout << "Nombre de threads ?" << endl;
-    cin >> NTHREADS;
-    cout << "largeur zoombox, float ! ?" << endl;
-    cin >> space;
+    cout << desc << "\n";
+    return 1;
   }
-  else if (option == 2)
+
+  if (vm.count("pallette"))
   {
     make_pallette();
-    return 0;
+    return 1;
   }
+
+  if (vm.count("size_x"))
+  {
+    dim_x = vm["size_x"].as<int>();
+  }
+
+  if (vm.count("size_y"))
+  {
+    dim_y = vm["size_y"].as<int>();
+  }
+
+  if (vm.count("nbr_iter"))
+  {
+    nb_iterations = vm["nbr_iter"].as<int>();
+  }
+
+  if (vm.count("nbr_threads"))
+  {
+    NTHREADS = vm["nbr_threads"].as<int>();
+  }
+
+  if (vm.count("size_zoombox"))
+  {
+    space = vm["size_zoombox"].as<double>();
+  }
+
+  if (vm.count("center_x"))
+  {
+    complex<double> c1(vm["center_x"].as<double>(), center.imag());
+    center = c1;
+  }
+
+  if (vm.count("center_y"))
+  {
+    complex<double> c2(center.real(), vm["center_y"].as<double>());
+    center = c2;
+  }
+
+  cout << "Taille de l'image : " << dim_x << " x " << dim_y << endl
+       << "Nombre d'itérations : " << nb_iterations << endl
+       << "Nombre de threads : " << NTHREADS << endl
+       << "Taille de la zoombox : " << 2 * space << " x " << 2 * space * dim_y / dim_x << endl
+       << "Centre du zoom : " << center.real() << " + " << center.imag() << "i" << endl;
 
   Mat img = Mat::ones(Size(dim_x, dim_y), CV_32FC3);
   img.convertTo(img, CV_32FC3, 1 / 255.0); //Image avec trois channels B,G,R codés entre 0 et 1
@@ -186,5 +230,6 @@ int main()
 
   // display(img);
   imwrite("images/Mendelbrot.tiff", img);
+
   return 0;
 }

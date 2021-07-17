@@ -31,60 +31,36 @@ complex<double> get_C_number_from_pixel(int i, int j, const Mat *image, complex<
   return result;
 }
 
-Vec3f get_color_from_nb_iteration(int nb)
+Vec3f get_color_from_nb_iteration(uint nb, vector<Vec3f> colors, uint lenght_color)
 {
   float value_r;
   float value_g;
   float value_b;
-  int total = 150;
-  int m = 25;
-  if ((nb % total) < (float)m)
+  int total = lenght_color * colors.size();
+  int num_c = (nb % total) / lenght_color;
+  float diff_b;
+  float diff_g;
+  float diff_r;
+  if (num_c < colors.size() - 1)
   {
-    //Dégradé de noir vers blanc
-    value_r = (nb % m) / (float)m;
-    value_g = (nb % m) / (float)m;
-    value_b = (nb % m) / (float)m;
+    diff_b = colors.at(num_c + 1)(0) - colors.at(num_c)(0);
+    diff_g = colors.at(num_c + 1)(1) - colors.at(num_c)(1);
+    diff_r = colors.at(num_c + 1)(2) - colors.at(num_c)(2);
   }
-  else if ((nb % total) < 2 * (float)m)
+  else
   {
-    //Dégradé de blanc vers bleu
-    value_r = 1 - (nb % m) / (float)m;
-    value_g = 1 - (nb % m) / (float)m;
-    value_b = 1;
+    diff_b = colors.at(0)(0) - colors.at(num_c)(0);
+    diff_g = colors.at(0)(1) - colors.at(num_c)(1);
+    diff_r = colors.at(0)(2) - colors.at(num_c)(2);
   }
-  else if ((nb % total) < 3 * (float)m)
-  {
-    //Dégradé de bleu vers noir
-    value_r = 0;
-    value_g = 0;
-    value_b = 1 - (nb % m) / (float)m;
-  }
-  else if ((nb % total) < 4 * (float)m)
-  {
-    //Dégradé de noir vers rouge
-    value_r = (nb % m) / (float)m;
-    value_g = 0;
-    value_b = 0;
-  }
-  else if ((nb % total) < 5 * (float)m)
-  {
-    //Dégradé de rouge vers orange
-    value_r = 1;
-    value_g = (165 / 255.0) * (nb % m) / (float)m;
-    value_b = 0;
-  }
-  else if ((nb % total) < 6 * (float)m)
-  {
-    //Dégradé de orange vers noir
-    value_r = 1 - (nb % m) / (float)m;
-    value_g = (165 / 255.0) - (165 / 255.0) * (nb % m) / (float)m;
-    value_b = 0;
-  }
+  value_b = colors.at(num_c)(0) + diff_b * (nb % lenght_color) / (float)lenght_color;
+  value_g = colors.at(num_c)(1) + diff_g * (nb % lenght_color) / (float)lenght_color;
+  value_r = colors.at(num_c)(2) + diff_r * (nb % lenght_color) / (float)lenght_color;
   Vec3f intensity(value_b, value_g, value_r);
   return intensity;
 }
 
-Vec3f color_of_C_number(complex<double> z, int nb_iteration_max)
+Vec3f color_of_C_number(complex<double> z, int nb_iteration_max, vector<Vec3f> colors, uint lenght_color)
 {
   complex<double> c = z;
   for (int i = 0; i < nb_iteration_max; i++)
@@ -92,14 +68,14 @@ Vec3f color_of_C_number(complex<double> z, int nb_iteration_max)
     z = z * z + c;
     if (abs(z) > 2)
     {
-      return get_color_from_nb_iteration(i);
+      return get_color_from_nb_iteration(i, colors, lenght_color);
     }
   }
   Vec3f intensity(0, 0, 0);
   return intensity;
 }
 
-void make_pallette()
+void make_pallette(vector<Vec3f> colors, uint lenght_color)
 {
   int dim_x = 1000;
   int dim_y = 200;
@@ -108,7 +84,7 @@ void make_pallette()
 #pragma omp parallel for schedule(dynamic, 1)
   for (int j = 0; j < pallette.cols; j++)
   {
-    Vec3f color = get_color_from_nb_iteration(j);
+    Vec3f color = get_color_from_nb_iteration(j, colors, lenght_color);
     for (int i = 0; i < pallette.rows; i++)
     {
       pallette.at<Vec3f>(i, j) = color;
@@ -126,6 +102,15 @@ int main(int argc, char **argv)
 {
   int option = 0;
 
+  //Couleurs
+  vector<Vec3f> colors;
+  colors.push_back(Vec3f(0, 0, 0));
+  colors.push_back(Vec3f(0, 1, 1));
+  colors.push_back(Vec3f(1, 0, 0));
+  colors.push_back(Vec3f(1, 1, 0));
+  colors.push_back(Vec3f(1, 0, 1));
+  uint lenght_color = 1;
+
   //Param de calcul
   int nb_iterations = 300;
   int NTHREADS = 1;
@@ -136,7 +121,7 @@ int main(int argc, char **argv)
 
   //Param du zoom
   // complex<double> center(-0.7, 0); // Centre approx figure globale
-  complex<double> center(0.743643887037151, 0.13182590420533);
+  complex<double> center(-0.743643887037151, 0.13182590420533);
   float space = 0.1;
 
   cout << "----------------------------------------" << endl
@@ -144,7 +129,7 @@ int main(int argc, char **argv)
        << "----------------------------------------" << endl;
 
   // Declare the supported options.
-  po::options_description desc("Allowed options");
+  po::options_description desc("Options possibles : ");
   desc.add_options()("help", "Afficher les options")("size_x", po::value<int>(), "Largeur de l'image en pixels")("size_y", po::value<int>(), "Hauteur de l'image en pixels")("nbr_iter", po::value<int>(), "Nombre maximal d'itérations")("nbr_threads", po::value<int>(), "Nombre de threads utilisés")("size_zoombox", po::value<double>(), "Demi largeur de la zoombox")("center_x", po::value<double>(), "Centre du zoom en x")("center_y", po::value<double>(), "Centre du zoom en y")("pallette", po::value<bool>(), "Afficher la pallette de couleurs");
 
   po::variables_map vm;
@@ -159,7 +144,7 @@ int main(int argc, char **argv)
 
   if (vm.count("pallette"))
   {
-    make_pallette();
+    make_pallette(colors, lenght_color);
     return 1;
   }
 
@@ -218,7 +203,7 @@ int main(int argc, char **argv)
     for (int j = 0; j < img.cols; j++)
     {
       complex<double> z = get_C_number_from_pixel(i, j, &img, center, space);
-      img.at<Vec3f>(i, j) = color_of_C_number(z, nb_iterations);
+      img.at<Vec3f>(i, j) = color_of_C_number(z, nb_iterations, colors, lenght_color);
     }
   }
 

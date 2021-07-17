@@ -31,13 +31,13 @@ complex<double> get_C_number_from_pixel(int i, int j, const Mat *image, complex<
   return result;
 }
 
-Vec3f get_color_from_nb_iteration(uint nb, vector<Vec3f> colors, uint lenght_color)
+Vec3f get_color_from_nb_iteration(uint nb, vector<Vec3f> colors, uint length_color)
 {
   float value_r;
   float value_g;
   float value_b;
-  int total = lenght_color * colors.size();
-  int num_c = (nb % total) / lenght_color;
+  int total = length_color * colors.size();
+  int num_c = (nb % total) / length_color;
   float diff_b;
   float diff_g;
   float diff_r;
@@ -53,14 +53,14 @@ Vec3f get_color_from_nb_iteration(uint nb, vector<Vec3f> colors, uint lenght_col
     diff_g = colors.at(0)(1) - colors.at(num_c)(1);
     diff_r = colors.at(0)(2) - colors.at(num_c)(2);
   }
-  value_b = colors.at(num_c)(0) + diff_b * (nb % lenght_color) / (float)lenght_color;
-  value_g = colors.at(num_c)(1) + diff_g * (nb % lenght_color) / (float)lenght_color;
-  value_r = colors.at(num_c)(2) + diff_r * (nb % lenght_color) / (float)lenght_color;
+  value_b = colors.at(num_c)(0) + diff_b * (nb % length_color) / (float)length_color;
+  value_g = colors.at(num_c)(1) + diff_g * (nb % length_color) / (float)length_color;
+  value_r = colors.at(num_c)(2) + diff_r * (nb % length_color) / (float)length_color;
   Vec3f intensity(value_b, value_g, value_r);
   return intensity;
 }
 
-Vec3f color_of_C_number(complex<double> z, int nb_iteration_max, vector<Vec3f> colors, uint lenght_color)
+Vec3f color_of_C_number(complex<double> z, int nb_iteration_max, vector<Vec3f> colors, uint length_color)
 {
   complex<double> c = z;
   for (int i = 0; i < nb_iteration_max; i++)
@@ -68,14 +68,14 @@ Vec3f color_of_C_number(complex<double> z, int nb_iteration_max, vector<Vec3f> c
     z = z * z + c;
     if (abs(z) > 2)
     {
-      return get_color_from_nb_iteration(i, colors, lenght_color);
+      return get_color_from_nb_iteration(i, colors, length_color);
     }
   }
   Vec3f intensity(0, 0, 0);
   return intensity;
 }
 
-void make_pallette(vector<Vec3f> colors, uint lenght_color)
+void make_pallette(vector<Vec3f> colors, uint length_color)
 {
   int dim_x = 1000;
   int dim_y = 200;
@@ -84,7 +84,7 @@ void make_pallette(vector<Vec3f> colors, uint lenght_color)
 #pragma omp parallel for schedule(dynamic, 1)
   for (int j = 0; j < pallette.cols; j++)
   {
-    Vec3f color = get_color_from_nb_iteration(j, colors, lenght_color);
+    Vec3f color = get_color_from_nb_iteration(j, colors, length_color);
     for (int i = 0; i < pallette.rows; i++)
     {
       pallette.at<Vec3f>(i, j) = color;
@@ -100,16 +100,16 @@ void make_pallette(vector<Vec3f> colors, uint lenght_color)
 
 int main(int argc, char **argv)
 {
-  int option = 0;
-
   //Couleurs
   vector<Vec3f> colors;
   colors.push_back(Vec3f(0, 0, 0));
+  colors.push_back(Vec3f(0, 0, 204/255.0));
+  colors.push_back(Vec3f(0, 128/255.0, 1));
   colors.push_back(Vec3f(0, 1, 1));
-  colors.push_back(Vec3f(1, 0, 0));
+  colors.push_back(Vec3f(1, 1, 1));
   colors.push_back(Vec3f(1, 1, 0));
-  colors.push_back(Vec3f(1, 0, 1));
-  uint lenght_color = 1;
+  colors.push_back(Vec3f(50/255.0, 0, 0));
+  uint length_color = 25;
 
   //Param de calcul
   int nb_iterations = 300;
@@ -130,7 +130,7 @@ int main(int argc, char **argv)
 
   // Declare the supported options.
   po::options_description desc("Options possibles : ");
-  desc.add_options()("help", "Afficher les options")("size_x", po::value<int>(), "Largeur de l'image en pixels")("size_y", po::value<int>(), "Hauteur de l'image en pixels")("nbr_iter", po::value<int>(), "Nombre maximal d'itérations")("nbr_threads", po::value<int>(), "Nombre de threads utilisés")("size_zoombox", po::value<double>(), "Demi largeur de la zoombox")("center_x", po::value<double>(), "Centre du zoom en x")("center_y", po::value<double>(), "Centre du zoom en y")("pallette", po::value<bool>(), "Afficher la pallette de couleurs");
+  desc.add_options()("help", "Afficher les options")("size_x", po::value<int>(), "Largeur de l'image en pixels")("size_y", po::value<int>(), "Hauteur de l'image en pixels")("nbr_iter", po::value<int>(), "Nombre maximal d'itérations")("nbr_threads", po::value<int>(), "Nombre de threads utilisés")("size_zoombox", po::value<double>(), "Demi largeur de la zoombox (conseillé de prendre dans l'intervalle [0,2])")("center_x", po::value<double>(), "Centre du zoom en x")("center_y", po::value<double>(), "Centre du zoom en y")("pallette", po::value<bool>(), "Afficher la pallette de couleurs")("length_color", po::value<uint>(), "Nombre d'itérations par changement de couleurs");
 
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -144,7 +144,7 @@ int main(int argc, char **argv)
 
   if (vm.count("pallette"))
   {
-    make_pallette(colors, lenght_color);
+    make_pallette(colors, length_color);
     return 1;
   }
 
@@ -185,10 +185,17 @@ int main(int argc, char **argv)
     center = c2;
   }
 
+  if (vm.count("length_color"))
+  {
+    length_color = vm["length_color"].as<uint>();
+  }
+  
+
   cout << "Taille de l'image : " << dim_x << " x " << dim_y << endl
        << "Nombre d'itérations : " << nb_iterations << endl
        << "Nombre de threads : " << NTHREADS << endl
        << "Taille de la zoombox : " << 2 * space << " x " << 2 * space * dim_y / dim_x << endl
+       << "Persistance d'une couleur : " << length_color << endl
        << "Centre du zoom : " << center.real() << " + " << center.imag() << "i" << endl;
 
   Mat img = Mat::ones(Size(dim_x, dim_y), CV_32FC3);
@@ -203,7 +210,7 @@ int main(int argc, char **argv)
     for (int j = 0; j < img.cols; j++)
     {
       complex<double> z = get_C_number_from_pixel(i, j, &img, center, space);
-      img.at<Vec3f>(i, j) = color_of_C_number(z, nb_iterations, colors, lenght_color);
+      img.at<Vec3f>(i, j) = color_of_C_number(z, nb_iterations, colors, length_color);
     }
   }
 

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cmath>
+#include <math.h>
 #include <omp.h>
 #include <complex>
 #include <chrono>
@@ -13,6 +14,49 @@
 using namespace std;
 using namespace cv;
 namespace po = boost::program_options;
+
+void CallBackFunc(int event, int x, int y, int, void *input)
+{
+  if (event == EVENT_LBUTTONDOWN)
+  {
+    cout << "Left button of the mouse is clicked - position (" << x << ", " << y << ")" << endl;
+    Point P(x, y);
+    Point *p = (Point *)input;
+    *p = P;
+  }
+  else if (event == EVENT_RBUTTONDOWN)
+  {
+    // cout << "Right button of the mouse is clicked - position (" << x << ", " << y << ")" << endl;
+  }
+  else if (event == EVENT_MBUTTONDOWN)
+  {
+    // cout << "Middle button of the mouse is clicked - position (" << x << ", " << y << ")" << endl;
+  }
+  else if (event == EVENT_MOUSEMOVE)
+  {
+    // cout << "Mouse move over the window - position (" << x << ", " << y << ")" << endl;
+  }
+}
+
+void set_parameters_from_mouse(complex<double> *center, const Mat *img, float space)
+{
+  Point pixel;
+  bool A = true;
+  while (A)
+  {
+    //Create a window
+    namedWindow("My Window", 1);
+    //set the callback function for any mouse event
+    setMouseCallback("My Window", CallBackFunc, &pixel);
+    //show the image
+    imshow("My Window", *img);
+    // Wait until user press some key
+    waitKey(0);
+  }
+
+  complex<double> new_center = get_C_number_from_pixel(pixel.x, pixel.y, img, *center, space);
+  *center = new_center;
+}
 
 void display(Mat image)
 {
@@ -71,8 +115,16 @@ Vec3f color_of_C_number(complex<double> z, int nb_iteration_max, vector<Vec3f> c
       return get_color_from_nb_iteration(i, colors, length_color);
     }
   }
-  Vec3f intensity(0, 0, 0);
-  return intensity;
+  if (false) //Colorier mendelbrot
+  {
+    int virtual_nb = (int)(abs(z) * colors.size() * length_color);
+    return get_color_from_nb_iteration(virtual_nb, colors, length_color);
+  }
+  else
+  {
+    Vec3f intensity(0, 0, 0);
+    return intensity;
+  }
 }
 
 void make_pallette(vector<Vec3f> colors, uint length_color)
@@ -98,17 +150,31 @@ void make_pallette(vector<Vec3f> colors, uint length_color)
        << "---------" << endl;
 }
 
+void mendelbrot()
+{
+}
+
+void display_param(int dim_x, int dim_y, int nb_iterations, int NTHREADS, float space, uint length_color, complex<double> center)
+{
+  cout << "Taille de l'image : " << dim_x << " x " << dim_y << endl
+       << "Nombre d'itérations : " << nb_iterations << endl
+       << "Nombre de threads : " << NTHREADS << endl
+       << "Taille de la zoombox : " << 2 * space << " x " << 2 * space * dim_y / dim_x << endl
+       << "Persistance d'une couleur : " << length_color << endl
+       << "Centre du zoom : " << center.real() << " + " << center.imag() << "i" << endl;
+}
+
 int main(int argc, char **argv)
 {
   //Couleurs
-  vector<Vec3f> colors;
-  colors.push_back(Vec3f(0, 0, 0));
-  colors.push_back(Vec3f(0, 0, 204/255.0));
-  colors.push_back(Vec3f(0, 128/255.0, 1));
-  colors.push_back(Vec3f(0, 1, 1));
-  colors.push_back(Vec3f(1, 1, 1));
-  colors.push_back(Vec3f(1, 1, 0));
-  colors.push_back(Vec3f(50/255.0, 0, 0));
+  vector<Vec3f> colors = {
+      Vec3f(0, 0, 0),
+      Vec3f(0, 0, 204 / 255.0),
+      Vec3f(0, 128 / 255.0, 1),
+      Vec3f(0, 1, 1),
+      Vec3f(1, 1, 1),
+      Vec3f(1, 1, 0),
+      Vec3f(50 / 255.0, 0, 0)};
   uint length_color = 25;
 
   //Param de calcul
@@ -130,7 +196,7 @@ int main(int argc, char **argv)
 
   // Declare the supported options.
   po::options_description desc("Options possibles : ");
-  desc.add_options()("help", "Afficher les options")("size_x", po::value<int>(), "Largeur de l'image en pixels")("size_y", po::value<int>(), "Hauteur de l'image en pixels")("nbr_iter", po::value<int>(), "Nombre maximal d'itérations")("nbr_threads", po::value<int>(), "Nombre de threads utilisés")("size_zoombox", po::value<double>(), "Demi largeur de la zoombox (conseillé de prendre dans l'intervalle [0,2])")("center_x", po::value<double>(), "Centre du zoom en x")("center_y", po::value<double>(), "Centre du zoom en y")("pallette", po::value<bool>(), "Afficher la pallette de couleurs")("length_color", po::value<uint>(), "Nombre d'itérations par changement de couleurs");
+  desc.add_options()("help", "Afficher les options")("size_x", po::value<int>(), "Largeur de l'image en pixels")("size_y", po::value<int>(), "Hauteur de l'image en pixels")("nbr_iter", po::value<int>(), "Nombre maximal d'itérations")("nbr_threads", po::value<int>(), "Nombre de threads utilisés")("size_zoombox", po::value<double>(), "Demi largeur de la zoombox (conseillé de prendre dans l'intervalle [0,2])")("center_x", po::value<double>(), "Centre du zoom en x")("center_y", po::value<double>(), "Centre du zoom en y")("pallette", "Afficher la pallette de couleurs")("length_color", po::value<uint>(), "Nombre d'itérations par changement de couleurs");
 
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -139,12 +205,6 @@ int main(int argc, char **argv)
   if (vm.count("help"))
   {
     cout << desc << "\n";
-    return 1;
-  }
-
-  if (vm.count("pallette"))
-  {
-    make_pallette(colors, length_color);
     return 1;
   }
 
@@ -189,39 +249,47 @@ int main(int argc, char **argv)
   {
     length_color = vm["length_color"].as<uint>();
   }
-  
 
-  cout << "Taille de l'image : " << dim_x << " x " << dim_y << endl
-       << "Nombre d'itérations : " << nb_iterations << endl
-       << "Nombre de threads : " << NTHREADS << endl
-       << "Taille de la zoombox : " << 2 * space << " x " << 2 * space * dim_y / dim_x << endl
-       << "Persistance d'une couleur : " << length_color << endl
-       << "Centre du zoom : " << center.real() << " + " << center.imag() << "i" << endl;
+  if (vm.count("pallette"))
+  {
+    make_pallette(colors, length_color);
+    return 1;
+  }
+
+  display_param(dim_x, dim_y, nb_iterations, NTHREADS, space, length_color, center);
 
   Mat img = Mat::ones(Size(dim_x, dim_y), CV_32FC3);
   img.convertTo(img, CV_32FC3, 1 / 255.0); //Image avec trois channels B,G,R codés entre 0 et 1
 
   omp_set_num_threads(NTHREADS);
-  auto start = omp_get_wtime();
 
-#pragma omp parallel for schedule(dynamic, 1)
-  for (int i = 0; i < img.rows; i++)
+  bool A = true;
+  while (A)
   {
-    for (int j = 0; j < img.cols; j++)
+    auto start = omp_get_wtime();
+#pragma omp parallel for schedule(dynamic, 1)
+    for (int i = 0; i < img.rows; i++)
     {
-      complex<double> z = get_C_number_from_pixel(i, j, &img, center, space);
-      img.at<Vec3f>(i, j) = color_of_C_number(z, nb_iterations, colors, length_color);
+      for (int j = 0; j < img.cols; j++)
+      {
+        complex<double> z = get_C_number_from_pixel(i, j, &img, center, space);
+        img.at<Vec3f>(i, j) = color_of_C_number(z, nb_iterations, colors, length_color);
+      }
     }
+
+    auto stop = omp_get_wtime();
+    auto elapsed = chrono::duration<double>(stop - start).count();
+    cout << "----------------------------------------" << endl
+         << "Calculs faits en " << elapsed << " secondes." << endl
+         << "----------------------------------------" << endl;
+
+    set_parameters_from_mouse(&center, &img, space);
+    space = space / 2;
+    display_param(dim_x, dim_y, nb_iterations, NTHREADS, space, length_color, center);
   }
 
-  auto stop = omp_get_wtime();
-  auto elapsed = chrono::duration<double>(stop - start).count();
-  cout << "----------------------------------------" << endl
-       << "Calculs faits en " << elapsed << " secondes." << endl
-       << "----------------------------------------" << endl;
-
-  // display(img);
-  imwrite("images/Mendelbrot.tiff", img);
+  display(img);
+  // imwrite("images/Mendelbrot.tiff", img);
 
   return 0;
 }

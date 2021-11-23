@@ -16,7 +16,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 # set(CMAKE_CXX_FLAGS "-g -Wall")
 
-# add_subdirectory(src)
+add_subdirectory(src)
+
 
 add_executable(exe main.cpp)
 
@@ -26,12 +27,14 @@ target_link_libraries(
     PUBLIC ${Boost_LIBRARIES}
 )
 
-# target_link_libraries(
-#     exe
-#     PUBLIC libfractales
-# )
+target_include_directories(
+    exe
+    PUBLIC src
+)
 
-# target_include_directories(
-#     exe
-#     PUBLIC src
-# )
+target_link_libraries(
+    exe
+    PUBLIC libfractales
+)
+
+

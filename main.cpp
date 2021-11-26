@@ -27,6 +27,12 @@ int main(int argc, char **argv)
   typedef numeric_limits< double > dbl;
   cout.precision(dbl::max_digits10);
 
+
+  cout << "----------------------------------------" << endl
+       << "Fractales 2.0" << endl
+       << "----------------------------------------" << endl;
+
+
   //Couleurs
   vector<Vec3f> colors = {
       Vec3f(0, 0, 0),
@@ -52,10 +58,6 @@ int main(int argc, char **argv)
   complex<double> center(-0.7, 0); // Centre approx figure globale
   // complex<double> center(-0.743643887037151, 0.13182590420533); // Un point particulierintéressant
   float space = 1.5;
-
-  cout << "----------------------------------------" << endl
-       << "Fractales 2.0" << endl
-       << "----------------------------------------" << endl;
 
   // Declare the supported options.
   po::options_description desc("Options possibles : ");

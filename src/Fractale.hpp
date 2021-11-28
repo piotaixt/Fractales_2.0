@@ -38,7 +38,16 @@ public:
 class Mendelbrot : public Fractale {
 public:
   Mendelbrot();
-  void compute(); // version mendelbrot
+  void compute();
+};
+
+class Julia : public Fractale {
+private:
+  std::complex<double> c;
+
+public:
+  Julia();
+  void compute();
 };
 
 class Newton : public Fractale {

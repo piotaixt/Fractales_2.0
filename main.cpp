@@ -25,19 +25,21 @@ int main(int argc, char **argv) {
   cout << "----------------------------------------" << endl
        << "Fractales 2.0" << endl
        << "----------------------------------------" << endl;
-  // Pour que "cout" ne fasse pas un arrondi lorsqu'il affiche un double.
-  typedef numeric_limits<double> dbl;
-  cout.precision(dbl::max_digits10);
 
-  Mendelbrot mendel_1;
+  // Mendelbrot mendel_1;
 
-  // bool A = true;
-  // while (A) {
-  mendel_1.display_parameters();
-  mendel_1.compute();
-  mendel_1.display_image();
-  //   A = false;
-  // }
+  // // bool A = true;
+  // // while (A) {
+  // mendel_1.display_parameters();
+  // mendel_1.compute();
+  // mendel_1.display_image();
+  // //   A = false;
+  // // }
+
+  Julia julia_1;
+  julia_1.display_parameters();
+  julia_1.compute();
+  julia_1.display_image();
 
   return 0;
 }

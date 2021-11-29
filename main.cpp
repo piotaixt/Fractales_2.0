@@ -14,6 +14,7 @@
 #include <opencv2/opencv.hpp>
 
 #include "Fractale.hpp"
+#include "Polynome.cpp"
 #include "interface.hpp"
 #include "options.hpp"
 

@@ -13,11 +13,11 @@ Fractale::Fractale() {
   // colors = {Vec3f(0, 0, 0), Vec3f(0, 0, 1),   Vec3f(0, 0.5, 1), Vec3f(0, 1,
   // 1),
   //           Vec3f(1, 1, 1), Vec3f(1, 0.3, 0), Vec3f(1, 0, 0)};
-  length_color = 150;
+  length_color = 300;
   nb_iterations = 500;
   NTHREADS = 16;
-  dim_x = 2000;
-  dim_y = 1000;
+  dim_x = 3000;
+  dim_y = 1500;
   center.real(0);
   center.imag(0.0);
   image = (Mat::ones(Size(dim_x, dim_y), CV_32FC3));
@@ -107,3 +107,38 @@ void Julia::compute() {
        << "Calculs faits en " << elapsed << " secondes." << endl
        << "----------------------------------------" << endl;
 }
+
+// Newton::Newton(std::vector<double> poly,
+//                std::vector<std::complex<double>> rac) {
+//   polynome = poly;
+//   racines = rac;
+// }
+
+// void Newton::compute() {
+//   omp_set_num_threads(NTHREADS);
+//   auto start = omp_get_wtime();
+
+// #pragma omp parallel for schedule(dynamic, 1)
+//   for (int i = 0; i < image.rows; i++) {
+//     int n_iter = 0;
+//     for (int j = 0; j < image.cols; j++) {
+//       complex<double> z = get_C_number_from_pixel(i, j, &image, center,
+//       space);
+
+//       for (int k = 1; k < nb_iterations; k++) {
+//       }
+
+//       // A FINIR
+
+//       n_iter = julia_iterations_of_C_number(z, c, nb_iterations);
+
+//       image.at<Vec3f>(i, j) =
+//           newton_get_color(n_iter, nb_iterations, colors, length_color);
+//     }
+//   }
+//   auto stop = omp_get_wtime();
+//   auto elapsed = chrono::duration<double>(stop - start).count();
+//   cout << "----------------------------------------" << endl
+//        << "Calculs faits en " << elapsed << " secondes." << endl
+//        << "----------------------------------------" << endl;
+// }

@@ -1,3 +1,5 @@
+#include <math.h>
+
 #include "calculs.hpp"
 #include "interface.hpp"
 

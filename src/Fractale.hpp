@@ -50,10 +50,16 @@ public:
   void compute();
 };
 
-class Newton : public Fractale {
-public:
-  // compute(); // version newton
-};
+// class Newton : public Fractale {
+// private:
+//   std::vector<double> polynome;
+//   std::vector<std::complex<double>> racines;
+
+// public:
+//   Newton(std::vector<double> polynome,
+//          std::vector<std::complex<double>> racines);
+//   compute();
+// };
 
 class Lyapunov : public Fractale {
 public:

@@ -6,6 +6,8 @@
 #include <opencv2/opencv.hpp>
 #include <stdlib.h>
 
+double norme_2(std::complex<double> z);
+
 std::complex<double> get_C_number_from_pixel(int i, int j, const cv::Mat *image,
                                              std::complex<double> center,
                                              float space);

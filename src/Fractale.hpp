@@ -16,7 +16,9 @@
 #include <stdlib.h>
 #include <vector>
 
-class Fractale {
+#include "Polynome.hpp"
+
+template <typename T> class Fractale {
 
 protected:
   cv::Mat image;
@@ -27,7 +29,7 @@ protected:
   int dim_x;
   int dim_y;
   float space;
-  std::complex<double> center;
+  std::complex<T> center;
 
 public:
   Fractale();
@@ -35,33 +37,32 @@ public:
   void display_image();
 };
 
-class Mendelbrot : public Fractale {
+template <typename T> class Mendelbrot : public Fractale<T> {
 public:
   Mendelbrot();
   void compute();
 };
 
-class Julia : public Fractale {
-private:
-  std::complex<double> c;
-
-public:
-  Julia();
-  void compute();
-};
-
-// class Newton : public Fractale {
+// template <typename T> class Julia : public Fractale<T> {
 // private:
-//   std::vector<double> polynome;
-//   std::vector<std::complex<double>> racines;
+//   std::complex<T> c;
 
 // public:
-//   Newton(std::vector<double> polynome,
-//          std::vector<std::complex<double>> racines);
+//   Julia();
+//   void compute();
+// };
+
+// template <typename T> class Newton : public Fractale<T> {
+// private:
+//   Polynome<T> P;
+//   std::vector<std::complex<T>> racines;
+
+// public:
+//   Newton(Polynome<T> poly, std::vector<std::complex<T>> racines);
 //   compute();
 // };
 
-class Lyapunov : public Fractale {
+template <typename T> class Lyapunov : public Fractale<T> {
 public:
   // compute(); // version Lyapunov
 };

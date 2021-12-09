@@ -16,7 +16,7 @@
 #include "Fractale.hpp"
 #include "Polynome.cpp"
 #include "interface.hpp"
-#include "options.hpp"
+// #include "options.hpp"
 
 using namespace std;
 using namespace cv;
@@ -27,20 +27,20 @@ int main(int argc, char **argv) {
        << "Fractales 2.0" << endl
        << "----------------------------------------" << endl;
 
-  // Mendelbrot mendel_1;
+  Mendelbrot<double> mendel_1;
 
   // // bool A = true;
   // // while (A) {
-  // mendel_1.display_parameters();
-  // mendel_1.compute();
-  // mendel_1.display_image();
+  mendel_1.display_parameters();
+  mendel_1.compute();
+  mendel_1.display_image();
   // //   A = false;
   // // }
 
-  Julia julia_1;
-  julia_1.display_parameters();
-  julia_1.compute();
-  julia_1.display_image();
+  // Julia<double> julia_1;
+  // julia_1.display_parameters();
+  // julia_1.compute();
+  // julia_1.display_image();
 
   return 0;
 }

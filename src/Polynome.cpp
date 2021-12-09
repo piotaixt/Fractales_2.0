@@ -1,6 +1,7 @@
 #include <math.h>
 #include <stdlib.h>
 
+#include "Polynome.hpp"
 #include <cmath>
 #include <complex>
 #include <iostream>
@@ -8,18 +9,6 @@
 #include <vector>
 
 using namespace std;
-
-template <class T> class Polynome {
-private:
-  // Le premier coeff est le dominant, le dernier est le terme constant
-  vector<T> coefficients;
-  int deg;
-
-public:
-  Polynome(vector<T> poly);
-  T eval(T x);
-  Polynome deriv();
-};
 
 template <typename T> Polynome<T>::Polynome(vector<T> poly) {
   coefficients = poly;

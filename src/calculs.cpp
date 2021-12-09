@@ -7,6 +7,10 @@ using namespace std;
 using namespace cv;
 namespace po = boost::program_options;
 
+double norme_2(complex<double> z) {
+  return sqrt(pow(z.real(), 2) + pow(z.imag(), 2));
+}
+
 complex<double> get_C_number_from_pixel(int i, int j, const Mat *image,
                                         complex<double> center, float space) {
   // space donne la dimension de la zoombox (écart entre le centre et le bord de

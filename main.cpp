@@ -28,19 +28,22 @@ int main(int argc, char **argv) {
        << "----------------------------------------" << endl;
 
   Mendelbrot<double> mendel_1;
-
-  // // bool A = true;
-  // // while (A) {
   mendel_1.display_parameters();
   mendel_1.compute();
   mendel_1.display_image();
-  // //   A = false;
-  // // }
 
-  // Julia<double> julia_1;
-  // julia_1.display_parameters();
-  // julia_1.compute();
-  // julia_1.display_image();
+  Mendelbrot<float> mendel_2;
+  mendel_2.display_parameters();
+  mendel_2.compute();
+  mendel_2.display_image();
+
+  complex<double> c;
+  c.real(-0.70176);
+  c.imag(-0.3842);
+  Julia<double> julia_1(c);
+  julia_1.display_parameters();
+  julia_1.compute();
+  julia_1.display_image();
 
   return 0;
 }

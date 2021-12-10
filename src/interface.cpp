@@ -3,6 +3,7 @@
 #include <boost/program_options/parsers.hpp>
 #include <boost/program_options/variables_map.hpp>
 
+#include "Fractale.hpp"
 #include "calculs.hpp"
 #include "interface.hpp"
 
@@ -44,10 +45,4 @@ void set_parameters_from_mouse(complex<double> *center, const Mat *img,
   complex<double> new_center =
       get_C_number_from_pixel(pixel.y, pixel.x, img, *center, space);
   *center = new_center;
-}
-
-void display(Mat image) {
-  imshow("image", image);
-  waitKey(0);
-  destroyAllWindows();
 }

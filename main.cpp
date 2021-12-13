@@ -51,13 +51,11 @@ int main(int argc, char **argv) {
   // julia_1.display_image();
 
   std::vector<double> coeff = {1, 0, -1};
-
   Polynome poly(coeff);
-
   std::vector<std::complex<double>> racines = {1, -1};
-
   Newton frac_N(poly, racines, 16, 1700, 800);
   frac_N.compute();
   frac_N.display_image();
+
   return 0;
 }

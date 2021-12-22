@@ -11,6 +11,12 @@ double norme_2(complex<double> z) {
   return sqrt(pow(z.real(), 2) + pow(z.imag(), 2));
 }
 
+double fRand(double fMin, double fMax)
+{
+    double f = (double)rand() / RAND_MAX;
+    return fMin + f * (fMax - fMin);
+}
+
 // template <typename T>
 // complex<T> get_C_number_from_pixel(int i, int j, const Mat *image,
 //                                    complex<T> center, float space) {

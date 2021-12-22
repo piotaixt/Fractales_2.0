@@ -7,6 +7,7 @@
 #include <stdlib.h>
 
 double norme_2(std::complex<double> z);
+double fRand(double fMin, double fMax);
 
 template <typename T>
 std::complex<T> get_C_number_from_pixel(int i, int j, const cv::Mat *image,

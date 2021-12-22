@@ -22,7 +22,8 @@ using namespace std;
 using namespace cv;
 namespace po = boost::program_options;
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   cout << "----------------------------------------" << endl
        << "Fractales 2.0" << endl
        << "----------------------------------------" << endl;
@@ -50,13 +51,23 @@ int main(int argc, char **argv) {
   // julia_1.compute();
   // julia_1.display_image();
 
-  std::vector<double> coeff = {1, 0, -1};
+  std::vector<double> coeff = {1, 0, 0, 0, 15, 0, 0, 0, -16};
+  // std::vector<double> coeff = {1, 0, 0, -1};
 
-  Polynome poly(coeff);
+  Polynome P(coeff);
+  Polynome P_d = P.deriv();
+  // P.print();
+  // P_d.print();
 
-  std::vector<std::complex<double>> racines = {1, -1};
+  std::vector<std::complex<double>> racines = P.racines();
 
-  Newton frac_N(poly, racines, 16, 1700, 800);
+  cout << racines.size() << endl;
+  for (auto const &e : racines)
+  {
+    cout << e << endl;
+  }
+
+  Newton frac_N(P, racines, 16, 1000, 1000);
   frac_N.compute();
   frac_N.display_image();
   return 0;

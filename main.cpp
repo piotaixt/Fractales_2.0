@@ -28,6 +28,8 @@ int main(int argc, char **argv)
        << "Fractales 2.0" << endl
        << "----------------------------------------" << endl;
 
+  srand(time(NULL));
+
   // Mendelbrot<double> mendel_1;
   // mendel_1.display_parameters();
   // mendel_1.compute();
@@ -51,8 +53,8 @@ int main(int argc, char **argv)
   // julia_1.compute();
   // julia_1.display_image();
 
-  std::vector<double> coeff = {1, 0, 0, 0, 15, 0, 0, 0, -16};
-  // std::vector<double> coeff = {1, 0, 0, -1};
+  std::vector<double> coeff = {1, 0, 0, 0, 0, 0, 0, 0, -1};
+  // std::vector<double> coeff = {1, 0, -2, +2};
 
   Polynome P(coeff);
   Polynome P_d = P.deriv();

@@ -1,4 +1,5 @@
 #include <math.h>
+#include <time.h>
 
 #include "calculs.hpp"
 #include "interface.hpp"
@@ -7,14 +8,15 @@ using namespace std;
 using namespace cv;
 namespace po = boost::program_options;
 
-double norme_2(complex<double> z) {
+double norme_2(complex<double> z)
+{
   return sqrt(pow(z.real(), 2) + pow(z.imag(), 2));
 }
 
 double fRand(double fMin, double fMax)
 {
-    double f = (double)rand() / RAND_MAX;
-    return fMin + f * (fMax - fMin);
+  double f = (double)rand() / RAND_MAX;
+  return fMin + f * (fMax - fMin);
 }
 
 // template <typename T>
@@ -37,8 +39,10 @@ double fRand(double fMin, double fMax)
 // }
 
 Vec3f get_color_from_nb_iteration(uint nb, uint nb_iteration_max,
-                                  vector<Vec3f> colors, uint length_color) {
-  if (nb == nb_iteration_max) {
+                                  vector<Vec3f> colors, uint length_color)
+{
+  if (nb == nb_iteration_max)
+  {
     Vec3f intensity(0, 0, 0);
     return intensity;
   }
@@ -51,11 +55,14 @@ Vec3f get_color_from_nb_iteration(uint nb, uint nb_iteration_max,
   float diff_b;
   float diff_g;
   float diff_r;
-  if (num_c < colors.size() - 1) {
+  if (num_c < colors.size() - 1)
+  {
     diff_b = colors.at(num_c + 1)(0) - colors.at(num_c)(0);
     diff_g = colors.at(num_c + 1)(1) - colors.at(num_c)(1);
     diff_r = colors.at(num_c + 1)(2) - colors.at(num_c)(2);
-  } else {
+  }
+  else
+  {
     diff_b = colors.at(0)(0) - colors.at(num_c)(0);
     diff_g = colors.at(0)(1) - colors.at(num_c)(1);
     diff_r = colors.at(0)(2) - colors.at(num_c)(2);
@@ -71,11 +78,14 @@ Vec3f get_color_from_nb_iteration(uint nb, uint nb_iteration_max,
 }
 
 uint mendelbrot_iterations_of_C_number(complex<double> z,
-                                       int nb_iteration_max) {
+                                       int nb_iteration_max)
+{
   complex<double> c = z;
-  for (int i = 0; i < nb_iteration_max; i++) {
+  for (int i = 0; i < nb_iteration_max; i++)
+  {
     z = z * z + c;
-    if (abs(z) > 2) {
+    if (abs(z) > 2)
+    {
       return i;
     }
   }

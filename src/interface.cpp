@@ -1,15 +1,15 @@
-#include <boost/program_options/option.hpp>
-#include <boost/program_options/options_description.hpp>
-#include <boost/program_options/parsers.hpp>
-#include <boost/program_options/variables_map.hpp>
+// #include <boost/program_options/option.hpp>
+// #include <boost/program_options/options_description.hpp>
+// #include <boost/program_options/parsers.hpp>
+// #include <boost/program_options/variables_map.hpp>
 
-#include "Fractale.hpp"
-#include "calculs.hpp"
+#include <opencv2/opencv.hpp>
 #include "interface.hpp"
+#include "calculs.hpp"
 
 using namespace std;
 using namespace cv;
-namespace po = boost::program_options;
+// namespace po = boost::program_options;
 
 void CallBackFunc(int event, int x, int y, int, void *input) {
   if (event == EVENT_LBUTTONDOWN) {
@@ -45,4 +45,11 @@ void set_parameters_from_mouse(complex<double> *center, const Mat *img,
   complex<double> new_center =
       get_C_number_from_pixel(pixel.y, pixel.x, img, *center, space);
   *center = new_center;
+}
+
+void display(cv::Mat image)
+{
+  imshow("image", image);
+  cv::waitKey(0);
+  cv::destroyAllWindows();
 }

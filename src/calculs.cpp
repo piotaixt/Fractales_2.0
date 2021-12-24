@@ -1,12 +1,13 @@
-#include <math.h>
-#include <time.h>
+// #include <math.h>
+// #include <time.h>
+// #include <complex>
 
+#include <opencv2/opencv.hpp>
 #include "calculs.hpp"
 #include "interface.hpp"
 
 using namespace std;
 using namespace cv;
-namespace po = boost::program_options;
 
 double norme_2(complex<double> z)
 {
@@ -18,25 +19,6 @@ double fRand(double fMin, double fMax)
   double f = (double)rand() / RAND_MAX;
   return fMin + f * (fMax - fMin);
 }
-
-// template <typename T>
-// complex<T> get_C_number_from_pixel(int i, int j, const Mat *image,
-//                                    complex<T> center, float space) {
-//   // space donne la dimension de la zoombox (écart entre le centre et le bord
-//   de
-//   // la "zoombox" en x)
-//   float ratio =
-//       image->rows /
-//       (float)image->cols; // Pour gérer le ratio de la taille de l'image
-//   double realpart =
-//       center.real() + 2 * space * (j - ((image->cols) / 2.0)) /
-//       (image->cols);
-//   double impart = center.imag() + 2 * space * ratio *
-//                                       (-(i - (image->rows) / 2.0)) /
-//                                       (image->rows);
-//   complex<T> result(realpart, impart);
-//   return result;
-// }
 
 Vec3f get_color_from_nb_iteration(uint nb, uint nb_iteration_max,
                                   vector<Vec3f> colors, uint length_color)
@@ -92,11 +74,12 @@ uint mendelbrot_iterations_of_C_number(complex<double> z,
   return nb_iteration_max;
 }
 
-// void make_pallette(vector<Vec3f> colors, uint length_color,
+// Mat * make_pallette(vector<Vec3f> colors, uint length_color,
 //                    uint nb_iteration_max) {
 //   int dim_x = 3000;
 //   int dim_y = 200;
-//   Mat pallette = Mat::ones(Size(dim_x, dim_y), CV_32FC3);
+//   Mat * pallette = new Mat;
+  
 //   // pallette.convertTo(pallette, CV_32FC3, 1 / 255.0); //Image avec trois
 //   // channels B,G,R codés entre 0 et 1
 // #pragma omp parallel for schedule(dynamic, 1)
@@ -108,9 +91,5 @@ uint mendelbrot_iterations_of_C_number(complex<double> z,
 //       pallette.at<Vec3f>(i, j) = color;
 //     }
 //   }
-//   // display(pallette);
-//   imwrite("images/pallette.tiff", pallette);
-//   auto truc = imread("images/pallette.tiff");
-//   display(truc);
-//   cout << "Voila." << endl << "---------" << endl;
+//   return &pallette;
 // }

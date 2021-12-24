@@ -2,7 +2,7 @@
 project (libfractales)
 
 # Recursively list all .h and .cc files instead of manually put them here.
-file(GLOB_RECURSE SOURCES LIST_DIRECTORIES false *.hpp *.cpp)
+file(GLOB_RECURSE SOURCES LIST_DIRECTORIES false *.cpp)
 
 
 # Add all the sources to the library

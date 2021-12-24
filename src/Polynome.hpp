@@ -1,15 +1,15 @@
 #ifndef POLYNOME_H
 #define POLYNOME_H
 
-#include <math.h>
-#include <stdlib.h>
-#include <exception>
+// #include <math.h>
+// #include <stdlib.h>
+// #include <exception>
 
-#include <cmath>
-#include <complex>
-#include <iostream>
-#include <limits>
-#include <vector>
+// #include <cmath>
+// #include <complex>
+// #include <iostream>
+// #include <limits>
+// #include <vector>
 
 #include "calculs.hpp"
 

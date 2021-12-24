@@ -1,17 +1,15 @@
 #ifndef CALCULS_H
 #define CALCULS_H
 
-#include <boost/program_options/option.hpp>
-#include <complex>
-#include <opencv2/opencv.hpp>
-#include <stdlib.h>
-
 double norme_2(std::complex<double> z);
 double fRand(double fMin, double fMax);
+// cv::Mat* make_pallette(std::vector<cv::Vec3f> colors, uint length_color,
+                  // uint nb_iteration_max);
 
 template <typename T>
 std::complex<T> get_C_number_from_pixel(int i, int j, const cv::Mat *image,
-                                        std::complex<T> center, float space) {
+                                        std::complex<T> center, float space)
+{
   // space donne la dimension de la zoombox (écart entre le centre et le bord de
   // la "zoombox" en x)
   float ratio =
@@ -28,10 +26,13 @@ std::complex<T> get_C_number_from_pixel(int i, int j, const cv::Mat *image,
 
 template <typename T>
 uint julia_iterations_of_C_number(std::complex<T> z, std::complex<T> c,
-                                  int nb_iteration_max) {
-  for (int i = 0; i < nb_iteration_max; i++) {
+                                  int nb_iteration_max)
+{
+  for (int i = 0; i < nb_iteration_max; i++)
+  {
     z = z * z + c;
-    if (abs(z) > 2) {
+    if (abs(z) > 2)
+    {
       return i;
     }
   }

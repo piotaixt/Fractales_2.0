@@ -124,56 +124,45 @@ std::vector<std::complex<T>> Polynome<T>::racines()
   double prec = 0.0001;
   std::vector<std::complex<T>> vec_rac;
   std::complex<T> z;
-  std::complex<T> z_prev;
-  int M = 1;
+  
   int nb_iterations_max = 10000;
-  int nb_points = 100000;
+  int nb_points = 1000;
+  T module_z;
   bool first_rac = true;
   bool rac_is_found;
+  
+  int M = 1;
   while (M < 50)
   {
+    // Pour tous les points tirrés au hasard
     for (int i = 0; i < nb_points; i++)
     {
       z.real(fRand(-M, M));
       z.imag(fRand(-M, M));
-
       rac_is_found = false;
+      // Tant qu'on trouve pas une racine on itère la méthode de Newton
       int k = 0;
       while (!rac_is_found && k < nb_iterations_max)
       {
         z = z - (P.eval(z) / p_deriv.eval(z));
-
-        if (first_rac && (norme_2(P.eval(z)) < prec))
+        module_z = norme_2(P.eval(z));
+        // On recherche la première racine si ça converge vers un antécédent de 0
+        if (first_rac && module_z < prec)
         {
           vec_rac.push_back(z);
           first_rac = false;
         }
-
+        //Si on a déjà trouvé une racine on regarde vers où ça converge
         if (!first_rac)
         {
-
-          for (int l = 0; l < vec_rac.size(); ++l)
-          {
-            if (norme_2(z - vec_rac[l]) < prec)
-            {
-              rac_is_found = true;
-              break;
-            }
-          }
-
-          if (!rac_is_found && norme_2(P.eval(z)) < prec)
-          {
+          rac_is_found = is_already_found(vec_rac, z, prec);
+          if (!rac_is_found && module_z < prec)
             vec_rac.push_back(z);
-          }
         }
-        if (norme_2(P.eval(z)) > 100)
-        {
-          break;
-        }
-
+        // Si ça diverge trop loin on s'arrète
+        rac_is_found = module_z > 100 ? true : false;
         k++;
       }
-
       if (vec_rac.size() == P.deg)
       {
         return vec_rac;
@@ -181,12 +170,6 @@ std::vector<std::complex<T>> Polynome<T>::racines()
     }
     M++;
   }
-
-  if (vec_rac.size() != P.deg)
-  {
-    std::cout << "Erreur de calcul des racines." << std::endl;
-  }
-
   return vec_rac;
 }
 

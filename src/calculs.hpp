@@ -4,7 +4,7 @@
 double norme_2(std::complex<double> z);
 double fRand(double fMin, double fMax);
 // cv::Mat* make_pallette(std::vector<cv::Vec3f> colors, uint length_color,
-                  // uint nb_iteration_max);
+// uint nb_iteration_max);
 
 template <typename T>
 std::complex<T> get_C_number_from_pixel(int i, int j, const cv::Mat *image,
@@ -50,5 +50,21 @@ uint mendelbrot_iterations_of_C_number(std::complex<double> z,
 //                                   nb_iteration_max);
 // void make_pallette(std::vector<cv::Vec3f> colors, uint length_color,
 //                    uint nb_iteration_max);
+
+template <typename T>
+bool is_already_found(std::vector<std::complex<T>> vec_rac, std::complex<T> z, double prec)
+{
+  bool res = false;
+  int l = 0;
+  while (l < vec_rac.size())
+  {
+    if (norme_2(z - vec_rac[l]) < prec)
+    {
+      res = true;
+    }
+    l++;
+  }
+  return res;
+}
 
 #endif

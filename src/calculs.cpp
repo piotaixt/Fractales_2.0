@@ -79,7 +79,7 @@ uint mendelbrot_iterations_of_C_number(complex<double> z,
 //   int dim_x = 3000;
 //   int dim_y = 200;
 //   Mat * pallette = new Mat;
-  
+
 //   // pallette.convertTo(pallette, CV_32FC3, 1 / 255.0); //Image avec trois
 //   // channels B,G,R codés entre 0 et 1
 // #pragma omp parallel for schedule(dynamic, 1)

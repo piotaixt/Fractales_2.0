@@ -37,7 +37,7 @@ Newton<T>::Newton(Polynome<T> poly, std::vector<std::complex<T>> rac,
 template <typename T>
 void Newton<T>::compute()
 {
-    T alpha = 1;
+    T alpha = 1.2;
     float prec = 0.001;
     int nb_iterations_max = 300;
     Polynome p_deriv = P.deriv();

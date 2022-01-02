@@ -106,7 +106,7 @@ Polynome<T> Polynome<T>::deriv()
   std::vector<T> poly_deriv;
   for (auto const &e : coefficients)
   {
-    if (n>0)
+    if (n > 0)
     {
       poly_deriv.push_back(e * n);
       n = n - 1;
@@ -121,18 +121,18 @@ std::vector<std::complex<T>> Polynome<T>::racines()
   Polynome<T> P(coefficients);
   Polynome<T> p_deriv = P.deriv();
 
-  double prec = 0.0001;
+  double prec = 0.000001;
   std::vector<std::complex<T>> vec_rac;
   std::complex<T> z;
-  
-  int nb_iterations_max = 10000;
+
+  int nb_iterations_max = 1000;
   int nb_points = 1000;
   T module_z;
   bool first_rac = true;
   bool rac_is_found;
-  
-  int M = 1;
-  while (M < 50)
+
+  int M = 3;
+  while (M < 20)
   {
     // Pour tous les points tirrés au hasard
     for (int i = 0; i < nb_points; i++)
@@ -146,24 +146,29 @@ std::vector<std::complex<T>> Polynome<T>::racines()
       {
         z = z - (P.eval(z) / p_deriv.eval(z));
         module_z = norme_2(P.eval(z));
+        rac_is_found = module_z > 1000 ? true : false;
+        
         // On recherche la première racine si ça converge vers un antécédent de 0
         if (first_rac && module_z < prec)
         {
           vec_rac.push_back(z);
           first_rac = false;
+          rac_is_found = true;
         }
-        //Si on a déjà trouvé une racine on regarde vers où ça converge
-        if (!first_rac)
+        // Si on a déjà trouvé une racine on regarde vers où ça converge
+        else if (!first_rac)
         {
           rac_is_found = is_already_found(vec_rac, z, prec);
           if (!rac_is_found && module_z < prec)
+          {
             vec_rac.push_back(z);
+            rac_is_found = true;
+          }
         }
         // Si ça diverge trop loin on s'arrète
-        rac_is_found = module_z > 100 ? true : false;
         k++;
       }
-      if (vec_rac.size() == P.deg)
+      if (vec_rac.size() >= P.deg)
       {
         return vec_rac;
       }

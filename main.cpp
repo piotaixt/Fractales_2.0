@@ -48,8 +48,9 @@ int main(int argc, char **argv)
   // julia_1.display_image();
 
   // std::vector<double> coeff = {-2, 0, 8, 7, 0, -1, 1, -1, 1, -1, 1, -1, -1, 3, -14};
-  std::vector<double> coeff = {1, 0, 0, -1};
+  // std::vector<double> coeff = {1, 0, 0, -1};
   // vector<double> coeff = {1, 0, -2, +2};
+  vector<double> coeff = {1, -2, -3, 4, 4};
 
   Polynome P(coeff);
   Polynome P_d = P.deriv();

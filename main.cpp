@@ -1,31 +1,27 @@
-#include <math.h>
-#include <omp.h>
-#include <stdlib.h>
 
-#include <boost/program_options/option.hpp>
-#include <boost/program_options/options_description.hpp>
-#include <boost/program_options/parsers.hpp>
-#include <boost/program_options/variables_map.hpp>
-#include <chrono>
-#include <cmath>
-#include <complex>
-#include <iostream>
-#include <limits>
+// #include <boost/program_options/option.hpp>
+// #include <boost/program_options/options_description.hpp>
+// #include <boost/program_options/parsers.hpp>
+// #include <boost/program_options/variables_map.hpp>
 #include <opencv2/opencv.hpp>
 
-#include "Fractale.hpp"
+#include "Julia.hpp"
+#include "Mendelbrot.hpp"
+#include "Newton.hpp"
 #include "Polynome.hpp"
 #include "interface.hpp"
 // #include "options.hpp"
 
 using namespace std;
 using namespace cv;
-namespace po = boost::program_options;
+// namespace po = boost::program_options;
 
 int main(int argc, char **argv) {
   cout << "----------------------------------------" << endl
        << "Fractales 2.0" << endl
        << "----------------------------------------" << endl;
+
+  srand(time(NULL));
 
   // Mendelbrot<double> mendel_1;
   // mendel_1.display_parameters();
@@ -50,12 +46,26 @@ int main(int argc, char **argv) {
   // julia_1.compute();
   // julia_1.display_image();
 
-  std::vector<double> coeff = {1, 0, -1};
-  Polynome poly(coeff);
-  std::vector<std::complex<double>> racines = {1, -1};
-  Newton frac_N(poly, racines, 16, 1700, 800);
+  // std::vector<double> coeff = {-2, 0, 8, 7, 0, -1, 1, -1, 1, -1, 1, -1, -1,
+  // 3, -14};
+  std::vector<double> coeff = {1, 0, 0, -1};
+  // vector<double> coeff = {1, 0, -2, +2};
+
+  Polynome P(coeff);
+  Polynome P_d = P.deriv();
+  P.print();
+  // P_d.print();
+
+  vector<complex<double>> racines = P.racines();
+
+  cout << racines.size() << endl;
+  for (auto const &e : racines) {
+    cout << e << endl;
+  }
+
+  Newton frac_N(P, racines, 16, 1000, 1000);
   frac_N.compute();
   frac_N.display_image();
-
+  // frac_N.write_image("x³-1 classic ");
   return 0;
 }
